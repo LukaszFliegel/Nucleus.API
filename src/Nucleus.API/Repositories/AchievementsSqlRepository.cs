@@ -40,19 +40,19 @@ namespace Nucleus.API.Repositories
         {
             var achievementToDelete = GetAchievement(id);
 
-            if(achievementToDelete != null)
+            if(achievementToDelete == null)
             {
-                _context.Achievements.Remove(achievementToDelete);
-
-                return true;
+                return false;
             }
+
+            _context.Achievements.Remove(achievementToDelete);
 
             return false;
         }
 
         public bool SaveChanges()
         {
-            return (_context.SaveChanges() >= 0);
+            return _context.SaveChanges() >= 0;
         }
     }
 }

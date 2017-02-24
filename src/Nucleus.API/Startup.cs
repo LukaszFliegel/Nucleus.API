@@ -50,6 +50,7 @@ namespace Nucleus.API
                 cfg.CreateMap<AchievementDto, Achievement>();
                 cfg.CreateMap<AchievementForUpdateDto, Achievement>();
                 cfg.CreateMap<Achievement, AchievementForUpdateDto>();
+                cfg.CreateMap<AchievementForCreationDto, Achievement>();
             });
 
             app.UseMvc();

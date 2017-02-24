@@ -31,7 +31,7 @@ namespace Nucleus.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetAchievement")]
         public IActionResult GetAchievement(int id)
         {
             var achievement = _repository.GetAchievement(id);
@@ -44,6 +44,28 @@ namespace Nucleus.API.Controllers
             var result = Mapper.Map<AchievementDto>(achievement);
 
             return Ok(result);
+        }
+
+        [HttpPost]
+        public IActionResult CreateAchievement([FromBody] AchievementForCreationDto achievement)
+        {
+            if(achievement == null)
+            {
+                return BadRequest();
+            }
+
+            var achievementToCreate = Mapper.Map<Achievement>(achievement);
+
+            // custom business validation here
+
+            _repository.AddAchievement(achievementToCreate);
+
+            if(!_repository.SaveChanges())
+            {
+                return StatusCode(500, "A problem happened while handling your request.");
+            }
+
+            return CreatedAtRoute("GetAchievement", new { id = achievementToCreate.Id }, achievementToCreate);
         }
 
         [HttpPut("{id}")]

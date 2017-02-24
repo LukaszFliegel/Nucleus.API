@@ -14,6 +14,8 @@ namespace Nucleus.API.Repositories
 
         void AddAchievementCategory(AchievementCategory achievement);
 
+        bool DeleteAchievementCategory(int id);
+
         bool SaveChanges();
     }
 }
