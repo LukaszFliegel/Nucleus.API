@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Nucleus.API.Entities;
 using Nucleus.API.Models;
 using Nucleus.API.Repositories;
+using Nucleus.API.Validators;
 
 namespace Nucleus.API.Controllers
 {
@@ -15,10 +16,12 @@ namespace Nucleus.API.Controllers
     public class AchievementsController: Controller
     {
         private IAchievementsRepository _repository;
+        private AchievementValidator _validator;
 
         public AchievementsController(IAchievementsRepository repository)
         {
             _repository = repository;
+            _validator = new AchievementValidator();
         }
 
         [HttpGet()]
@@ -56,7 +59,12 @@ namespace Nucleus.API.Controllers
 
             var achievementToCreate = Mapper.Map<Achievement>(achievement);
 
-            // custom business validation here
+            TryValidateModel(achievementToCreate);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
             _repository.Add(achievementToCreate);
 
@@ -86,8 +94,6 @@ namespace Nucleus.API.Controllers
             Mapper.Map(achievement, achievementEntity);
 
             TryValidateModel(achievementEntity);
-
-            // custom logic validation here
 
             if (!ModelState.IsValid)
             {
@@ -130,8 +136,6 @@ namespace Nucleus.API.Controllers
             Mapper.Map(achievementToPatch, AchievementEntity);
 
             TryValidateModel(AchievementEntity);
-
-            // custom business validation here
 
             if (!ModelState.IsValid)
             {

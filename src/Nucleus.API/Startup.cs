@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -21,13 +22,16 @@ namespace Nucleus.API
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services
+                .AddMvc()
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
 
             var connectionString = @"Server=(localdb)\MSSQLLocalDB;Database=NucleusDb;Trusted_Connection=True;";
             services.AddDbContext<NucleusDbContext>(p => p.UseSqlServer(connectionString));
 
             services.AddScoped<IAchievementsRepository, AchievementsSqlRepository>();
             services.AddScoped<IAchievementCategoryRepository, AchievementCategorySqlRepository>();
+            
 
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(c =>
@@ -52,6 +56,22 @@ namespace Nucleus.API
 
             app.UseStatusCodePages();
 
+            InitializeMappings();
+
+            app.UseMvc();
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS etc.), specifying the Swagger JSON endpoint.
+            app.UseSwaggerUi(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Nucleus API V1");
+            });
+        }
+
+        private static void InitializeMappings()
+        {
             AutoMapper.Mapper.Initialize(cfg =>
             {
                 cfg.CreateMap<Achievement, AchievementDto>();
@@ -64,17 +84,6 @@ namespace Nucleus.API
                 cfg.CreateMap<AchievementCategoryForCreationDto, AchievementCategory>();
                 cfg.CreateMap<AchievementCategoryForUpdateDto, AchievementCategory>();
                 cfg.CreateMap<AchievementCategory, AchievementCategoryForUpdateDto>();
-            });
-
-            app.UseMvc();
-
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS etc.), specifying the Swagger JSON endpoint.
-            app.UseSwaggerUi(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Nucleus API V1");
             });
         }
     }

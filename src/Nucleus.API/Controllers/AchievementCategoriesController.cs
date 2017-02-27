@@ -56,7 +56,12 @@ namespace Nucleus.API.Controllers
 
             var categoryToAdd = Mapper.Map<AchievementCategory>(category);
 
-            // custom business validation here
+            TryValidateModel(categoryToAdd);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
             _repository.Add(categoryToAdd);
 
@@ -86,8 +91,6 @@ namespace Nucleus.API.Controllers
             Mapper.Map<AchievementCategoryForUpdateDto, AchievementCategory>(category, categoryEntity);
 
             TryValidateModel(categoryEntity);
-
-            // custom logic validation here
 
             if (!ModelState.IsValid)
             {
@@ -121,7 +124,8 @@ namespace Nucleus.API.Controllers
 
             patchDoc.ApplyTo(categoryToUpdate, ModelState);
 
-            if(!ModelState.IsValid)
+            // check if patch was properly applied (it doesn't checks if model is correct!)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -129,8 +133,6 @@ namespace Nucleus.API.Controllers
             Mapper.Map<AchievementCategoryForUpdateDto, AchievementCategory>(categoryToUpdate, categoryEntity);
 
             TryValidateModel(categoryEntity);
-
-            // custom validation here
 
             if(!ModelState.IsValid)
             {
