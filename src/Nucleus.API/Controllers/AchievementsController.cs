@@ -16,12 +16,10 @@ namespace Nucleus.API.Controllers
     public class AchievementsController: Controller
     {
         private IAchievementsRepository _repository;
-        private AchievementValidator _validator;
 
         public AchievementsController(IAchievementsRepository repository)
         {
             _repository = repository;
-            _validator = new AchievementValidator();
         }
 
         [HttpGet()]
