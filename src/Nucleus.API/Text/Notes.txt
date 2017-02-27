@@ -1,0 +1,14 @@
+﻿Here is the list of decisions that I had to made during designing the API:
+	1) Shall I use separate DTO's for each operation (create/read/update)? I decided to use it (always, even when the DTO's are the same). 
+		If you don't then some additional validation logic will be necessary (but there will be less classes to maintain) - for example to check if someone doesn't
+		want to modify Id of updated entity. It will also made some of the fields sent by consumer unused (Id during creation for example).
+	2) When to do validation logic. 
+		- You can validate DTO's objects (add annotations there and write validators for DTO's not for entity classes) before mapping them to Entity classes. 
+			In that case you have validation before mapping occures. It forces you to not validate Entity calsses at all, or to douyble the validation logic made 
+			on DTO's to entity classes. 
+		- You can also ignore DTO's validation completelly and validate only Entity classes. This will force you to always map DTO to entity even when user
+			posts invalid DTO model.
+
+		I feel like doubling validation is not robust solution. I don't like to validate DTO's only because this bonds validation to this specific API (to control layer)
+		not to the entities (model layer). Validated entities can be moved into separate project and shared across different sollutions. Con of this
+		approach is that the mapping from DTO to entity class always occures (it's before validation).
