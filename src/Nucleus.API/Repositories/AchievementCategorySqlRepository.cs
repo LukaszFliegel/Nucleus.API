@@ -15,24 +15,24 @@ namespace Nucleus.API.Repositories
             _context = context;
         }
 
-        public IEnumerable<AchievementCategory> GetAchievementCategories()
+        public IEnumerable<AchievementCategory> GetAll()
         {
             return _context.AchievementsCategories.OrderBy(p => p.Name).ToList();
         }
 
-        public AchievementCategory GetAchievementCategory(int id)
+        public AchievementCategory GetOne(int id)
         {
             return _context.AchievementsCategories.Where(p => p.Id == id).FirstOrDefault();
         }
 
-        public void AddAchievementCategory(AchievementCategory achievement)
+        public void Add(AchievementCategory achievement)
         {
             _context.Add(achievement);
         }
 
-        public bool DeleteAchievementCategory(int id)
+        public bool Delete(int id)
         {
-            var achievementToDelete = GetAchievementCategory(id);
+            var achievementToDelete = GetOne(id);
 
             if(achievementToDelete == null)
             {

@@ -6,16 +6,7 @@ using Nucleus.API.Entities;
 
 namespace Nucleus.API.Repositories
 {
-    public interface IAchievementCategoryRepository
+    public interface IAchievementCategoryRepository: ICrudRepository<AchievementCategory>
     {
-        IEnumerable<AchievementCategory> GetAchievementCategories();
-
-        AchievementCategory GetAchievementCategory(int id);
-
-        void AddAchievementCategory(AchievementCategory achievement);
-
-        bool DeleteAchievementCategory(int id);
-
-        bool SaveChanges();
     }
 }

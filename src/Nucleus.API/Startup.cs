@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Nucleus.API.Entities;
 using Nucleus.API.Models;
 using Nucleus.API.Repositories;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Nucleus.API
 {
@@ -26,6 +27,13 @@ namespace Nucleus.API
             services.AddDbContext<NucleusDbContext>(p => p.UseSqlServer(connectionString));
 
             services.AddScoped<IAchievementsRepository, AchievementsSqlRepository>();
+            services.AddScoped<IAchievementCategoryRepository, AchievementCategorySqlRepository>();
+
+            // Register the Swagger generator, defining one or more Swagger documents
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Nucleus API", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,25 +55,27 @@ namespace Nucleus.API
             AutoMapper.Mapper.Initialize(cfg =>
             {
                 cfg.CreateMap<Achievement, AchievementDto>();
-                cfg.CreateMap<AchievementDto, Achievement>();
+                //cfg.CreateMap<AchievementDto, Achievement>();
+                cfg.CreateMap<AchievementForCreationDto, Achievement>();
                 cfg.CreateMap<AchievementForUpdateDto, Achievement>();
                 cfg.CreateMap<Achievement, AchievementForUpdateDto>();
-                cfg.CreateMap<AchievementForCreationDto, Achievement>();
 
                 cfg.CreateMap<AchievementCategory, AchievementCategoryDto>();
+                cfg.CreateMap<AchievementCategoryForCreationDto, AchievementCategory>();
+                cfg.CreateMap<AchievementCategoryForUpdateDto, AchievementCategory>();
+                cfg.CreateMap<AchievementCategory, AchievementCategoryForUpdateDto>();
             });
 
             app.UseMvc();
 
-            //app.Run((context) =>
-            //{
-            //    throw new Exception("Aaaa!");
-            //});
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
 
-            //app.Run(async (context) =>
-            //{
-            //    await context.Response.WriteAsync("Hello World!");
-            //});
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS etc.), specifying the Swagger JSON endpoint.
+            app.UseSwaggerUi(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
         }
     }
 }

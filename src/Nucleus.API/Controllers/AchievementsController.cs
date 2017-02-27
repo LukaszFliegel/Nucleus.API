@@ -22,9 +22,9 @@ namespace Nucleus.API.Controllers
         }
 
         [HttpGet()]
-        public IActionResult GetAchievements(bool includeCategory = false)
+        public IActionResult GetAchievements([FromQuery] bool includeCategory = false)
         {
-            var achievemements = _repository.GetAchievements(includeCategory);
+            var achievemements = _repository.GetAll(includeCategory);
 
             var result = Mapper.Map<IEnumerable<AchievementDto>>(achievemements);
 
@@ -34,7 +34,7 @@ namespace Nucleus.API.Controllers
         [HttpGet("{id}", Name = "GetAchievement")]
         public IActionResult GetAchievement(int id)
         {
-            var achievement = _repository.GetAchievement(id);
+            var achievement = _repository.GetOne(id);
 
             if(achievement == null)
             {
@@ -46,7 +46,7 @@ namespace Nucleus.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
+        [HttpPost()]
         public IActionResult CreateAchievement([FromBody] AchievementForCreationDto achievement)
         {
             if(achievement == null)
@@ -58,7 +58,7 @@ namespace Nucleus.API.Controllers
 
             // custom business validation here
 
-            _repository.AddAchievement(achievementToCreate);
+            _repository.Add(achievementToCreate);
 
             if(!_repository.SaveChanges())
             {
@@ -76,7 +76,7 @@ namespace Nucleus.API.Controllers
                 return BadRequest();
             }
 
-            var achievementEntity = _repository.GetAchievement(id);
+            var achievementEntity = _repository.GetOne(id);
 
             if(achievementEntity == null)
             {
@@ -85,7 +85,16 @@ namespace Nucleus.API.Controllers
 
             Mapper.Map(achievement, achievementEntity);
 
-            if(!_repository.SaveChanges())
+            TryValidateModel(achievementEntity);
+
+            // custom logic validation here
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!_repository.SaveChanges())
             {
                 return StatusCode(500, "A problem happened while handling your request.");
             }
@@ -101,7 +110,7 @@ namespace Nucleus.API.Controllers
                 return BadRequest();
             }
 
-            var AchievementEntity = _repository.GetAchievement(id);
+            var AchievementEntity = _repository.GetOne(id);
 
             if(AchievementEntity == null)
             {
@@ -112,23 +121,24 @@ namespace Nucleus.API.Controllers
 
             patchDoc.ApplyTo(achievementToPatch, ModelState);
 
+            // check if patch was properly applied (it doesn't checks if model is correct!)
             if(!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            // custom business validation here
-
-            TryValidateModel(achievementToPatch);
-
-            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
             Mapper.Map(achievementToPatch, AchievementEntity);
 
-            if(!_repository.SaveChanges())
+            TryValidateModel(AchievementEntity);
+
+            // custom business validation here
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (!_repository.SaveChanges())
             {
                 return StatusCode(500, "A problem happened while handling your request.");
             }

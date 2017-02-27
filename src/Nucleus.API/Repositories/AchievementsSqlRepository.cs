@@ -16,7 +16,12 @@ namespace Nucleus.API.Repositories
             _context = context;
         }
 
-        public IEnumerable<Achievement> GetAchievements(bool includeCategory = false)
+        public IEnumerable<Achievement> GetAll()
+        {
+            return GetAll(false);
+        }
+
+        public IEnumerable<Achievement> GetAll(bool includeCategory = false)
         {
             if (includeCategory)
             {
@@ -26,19 +31,19 @@ namespace Nucleus.API.Repositories
             return _context.Achievements.OrderBy(p => p.Name).ToList();
         }
 
-        public Achievement GetAchievement(int id)
+        public Achievement GetOne(int id)
         {
             return _context.Achievements.FirstOrDefault(p => p.Id == id);
         }
 
-        public void AddAchievement(Achievement achievement)
+        public void Add(Achievement achievement)
         {
             _context.Achievements.Add(achievement);
         }
 
-        public bool DeleteAchievement(int id)
+        public bool Delete(int id)
         {
-            var achievementToDelete = GetAchievement(id);
+            var achievementToDelete = GetOne(id);
 
             if(achievementToDelete == null)
             {
