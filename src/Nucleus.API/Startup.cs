@@ -58,6 +58,11 @@ namespace Nucleus.API
 
             InitializeMappings();
 
+            app.UseCors(builder => builder.WithOrigins("http://localhost:4200")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+            );
+
             app.UseMvc();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
